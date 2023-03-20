@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Es8388.Configuration;
+using System;
 using System.Device.I2c;
+using System.Diagnostics;
 
 namespace Es8388
 {
@@ -9,8 +11,6 @@ namespace Es8388
     public class Es8388
     {
         private readonly I2cDevice _i2cDevice;
-        private OutSelect _outSelect;
-        private InSelect _inSelect;
         public const byte DefaultI2cAddress = 0x10;
 
         public Es8388(I2cDevice i2cDevice)
@@ -18,286 +18,402 @@ namespace Es8388
             _i2cDevice = i2cDevice ?? throw new ArgumentNullException(nameof(i2cDevice));
         }
 
-        public bool Init()
+        public void es8388_read_all()
         {
-            bool res = true;
-            /* INITIALIZATION (BASED ON ES8388 USER GUIDE EXAMPLE) */
-            // Set Chip to Slave
-            res &= I2cWrite(Register.ES8388_MASTERMODE, 0x00);
-            // Power down DEM and STM
-            res &= I2cWrite(Register.ES8388_CHIPPOWER, 0xFF);
-            // Set same LRCK	Set same LRCK
-            res &= I2cWrite(Register.ES8388_DACCONTROL21, 0x80);
-            // Set Chip to Play&Record Mode
-            res &= I2cWrite(Register.ES8388_CONTROL1, 0x05);
-            // Power Up Analog and Ibias
-            res &= I2cWrite(Register.ES8388_CONTROL2, 0x40);
-
-            /* ADC setting */
-            // Micbias for Record
-            res &= I2cWrite(Register.ES8388_ADCPOWER, 0x00);
-            // Enable Lin1/Rin1 (0x00 0x00) for Lin2/Rin2 (0x50 0x80)
-            res &= I2cWrite(Register.ES8388_ADCCONTROL2, 0x50);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL3, 0x80);
-            // PGA gain (0x88 - 24db) (0x77 - 21db)
-            res &= I2cWrite(Register.ES8388_ADCCONTROL1, 0x77);
-            // SFI setting (i2s mode/16 bit)
-            res &= I2cWrite(Register.ES8388_ADCCONTROL4, 0x0C);
-            // ADC MCLK/LCRK ratio (256)
-            res &= I2cWrite(Register.ES8388_ADCCONTROL5, 0x02);
-            // set ADC digital volume
-            res &= I2cWrite(Register.ES8388_ADCCONTROL8, 0x00);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL9, 0x00);
-            // recommended ALC setting for VOICE refer to ES8388 MANUAL
-            res &= I2cWrite(Register.ES8388_ADCCONTROL10, 0xEA);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL11, 0xC0);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL12, 0x12);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL13, 0x06);
-            res &= I2cWrite(Register.ES8388_ADCCONTROL14, 0xC3);
-
-            /* DAC setting */
-            // Power Up DAC& enable Lout/Rout
-            res &= I2cWrite(Register.ES8388_DACPOWER, 0x3C);
-            // SFI setting (i2s mode/16 bit)
-            res &= I2cWrite(Register.ES8388_DACCONTROL1, 0x18);
-            // DAC MCLK/LCRK ratio (256)
-            res &= I2cWrite(Register.ES8388_DACCONTROL2, 0x02);
-            // unmute codec
-            res &= I2cWrite(Register.ES8388_DACCONTROL3, 0x00);
-            // set DAC digital volume
-            res &= I2cWrite(Register.ES8388_DACCONTROL4, 0x00);
-            res &= I2cWrite(Register.ES8388_DACCONTROL5, 0x00);
-            // Setup Mixer
-            // (reg[16] 1B mic Amp, 0x09 direct;[reg 17-20] 0x90 DAC, 0x50 Mic Amp)
-            res &= I2cWrite(Register.ES8388_DACCONTROL16, 0x09);
-            res &= I2cWrite(Register.ES8388_DACCONTROL17, 0x50);
-            res &= I2cWrite(Register.ES8388_DACCONTROL18, 0x38);  //??
-            res &= I2cWrite(Register.ES8388_DACCONTROL19, 0x38);  //??
-            res &= I2cWrite(Register.ES8388_DACCONTROL20, 0x50);
-            // set Lout/Rout Volume -45db
-            res &= I2cWrite(Register.ES8388_DACCONTROL24, 0x00);
-            res &= I2cWrite(Register.ES8388_DACCONTROL25, 0x00);
-            res &= I2cWrite(Register.ES8388_DACCONTROL26, 0x00);
-            res &= I2cWrite(Register.ES8388_DACCONTROL27, 0x00);
-
-            /* Power up DEM and STM */
-            res &= I2cWrite(Register.ES8388_CHIPPOWER, 0x00);
-            /* set up MCLK) */
-            return res;
-        }
-
-        // Select output sink
-        // OUT1 -> Select Line OUTL/R1
-        // OUT2 -> Select Line OUTL/R2
-        // OUTALL -> Enable ALL
-        public bool OutputSelect(OutSelect outSelect)
-        {
-            bool res = true;
-            if (outSelect == OutSelect.OUTALL)
-                res &= I2cWrite(Register.ES8388_DACPOWER, 0x3C);
-            else if (outSelect == OutSelect.OUT1)
-                res &= I2cWrite(Register.ES8388_DACPOWER, 0x30);
-            else if (outSelect == OutSelect.OUT2)
-                res &= I2cWrite(Register.ES8388_DACPOWER, 0x0C);
-            _outSelect = outSelect;
-            return res;
-        }
-
-        // Select input source
-        // IN1     -> Select Line IN L/R 1
-        // IN2     -> Select Line IN L/R 2
-        // IN1DIFF -> differential IN L/R 1
-        // IN2DIFF -> differential IN L/R 2
-        public bool InputSelect(InSelect inSelect)
-        {
-            bool res = true;
-            if (inSelect == InSelect.IN1)
-                res &= I2cWrite(Register.ES8388_ADCCONTROL2, 0x00);
-            else if (inSelect == InSelect.IN2)
-                res &= I2cWrite(Register.ES8388_ADCCONTROL2, 0x50);
-            else if (inSelect == InSelect.IN1DIFF)
+            //printf( "\n\n===================\n\n");
+            for (int i = 0; i < 50; i++)
             {
-                res &= I2cWrite(Register.ES8388_ADCCONTROL2, 0xF0);
-                res &= I2cWrite(Register.ES8388_ADCCONTROL3, 0x00);
+                int reg = I2cRead((Register)i);
+                Debug.WriteLine($"Reg {i}, Value {reg}");
             }
-            else if (inSelect == InSelect.IN2DIFF)
-            {
-                res &= I2cWrite(Register.ES8388_ADCCONTROL2, 0xF0);
-                res &= I2cWrite(Register.ES8388_ADCCONTROL3, 0x80);
-            }
-            _inSelect = inSelect;
-            return res;
+            //printf( "\n\n===================\n\n");
         }
 
-        // mute Output
-        public bool DACmute(bool mute)
-        {
-            byte _reg = I2cRead(Register.ES8388_ADCCONTROL1);
-            bool res = true;
-            if (mute)
-                res &= I2cWrite(Register.ES8388_DACCONTROL3, (byte)(_reg | 0x04));
-            else
-                res &= I2cWrite(Register.ES8388_DACCONTROL3, (byte)(_reg & ~(0x04)));
-            return res;
-        }
 
-        // set output volume max is 33
-        public bool SetOutputVolume(byte vol)
+        private int es8388_set_adc_dac_volume(Module mode, int volume, int dot)
         {
-            if (vol > 33) vol = 33;
-            bool res = true;
-            if (_outSelect == OutSelect.OUTALL || _outSelect == OutSelect.OUT1)
+            int res = 0;
+            if (volume < -96 || volume > 0)
             {
-                res &= I2cWrite(Register.ES8388_DACCONTROL24, vol);  // LOUT1VOL
-                res &= I2cWrite(Register.ES8388_DACCONTROL25, vol);  // ROUT1VOL
+                if (volume < -96)
+                    volume = -96;
+                else
+                    volume = 0;
             }
-            if (_outSelect == OutSelect.OUTALL || _outSelect == OutSelect.OUT2)
+            dot = (dot >= 5 ? 1 : 0);
+            volume = (-volume << 1) + dot;
+            if (mode == Module.ES_MODULE_ADC || mode == Module.ES_MODULE_ADC_DAC)
             {
-                res &= I2cWrite(Register.ES8388_DACCONTROL26, vol);  // LOUT2VOL
-                res &= I2cWrite(Register.ES8388_DACCONTROL27, vol);  // ROUT2VOL
+                res |= I2cWrite(Register.ES8388_ADCCONTROL8, volume);
+                res |= I2cWrite(Register.ES8388_ADCCONTROL9, volume);  //ADC Right Volume=0db
+            }
+            if (mode == Module.ES_MODULE_DAC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                res |= I2cWrite(Register.ES8388_DACCONTROL5, volume);
+                res |= I2cWrite(Register.ES8388_DACCONTROL4, volume);
             }
             return res;
         }
 
-        public byte GetOutputVolume() => I2cRead(Register.ES8388_DACCONTROL24);
-
-        // set input gain max is 8 +24db
-        public bool SetInputGain(int gain)
+        public int es8388_start(Module mode)
         {
-            if (gain > 8) gain = 8;
-            bool res = true;
-            gain = (gain << 4) | gain;
-            res &= I2cWrite(Register.ES8388_ADCCONTROL1, (byte)gain);
-            return res;
-        }
-
-        public byte GetInputGain()
-        {
-            var reg = I2cRead(Register.ES8388_ADCCONTROL1);
-            return (byte)(reg & 0x0F);
-        }
-
-        // Recommended ALC setting from User Guide
-        // DISABLE -> Disable ALC
-        // GENERIC -> Generic Mode
-        // VOICE   -> Voice Mode
-        // MUSIC   -> Music Mode
-        public bool SetALCmode(AlcModeSelect alc)
-        {
-            bool res = true;
-
-            // generic ALC setting
-            byte ALCSEL = 0b11;       // stereo
-            byte ALCLVL = 0b0011;     //-12db
-            byte MAXGAIN = 0b111;     //+35.5db
-            byte MINGAIN = 0b000;     //-12db
-            byte ALCHLD = 0b0000;     // 0ms
-            byte ALCDCY = 0b0101;     // 13.1ms/step
-            byte ALCATK = 0b0111;     // 13.3ms/step
-            byte ALCMODE = 0b0;       // ALC
-            byte ALCZC = 0b0;         // ZC off
-            byte TIME_OUT = 0b0;      // disable
-            byte NGAT = 0b1;          // enable
-            byte NGTH = 0b10001;      //-51db
-            byte NGG = 0b00;          // hold gain
-            byte WIN_SIZE = 0b00110;  // default
-
-            if (alc == AlcModeSelect.DISABLE)
-                ALCSEL = 0b00;
-            else if (alc == AlcModeSelect.MUSIC)
+            int res = 1;
+            byte prev_data = I2cRead(Register.ES8388_DACCONTROL21);
+            if (mode == Module.ES_MODULE_LINE)
             {
-                ALCDCY = 0b1010;  // 420ms/step
-                ALCATK = 0b0110;  // 6.66ms/step
-                NGTH = 0b01011;   // -60db
-            }
-            else if (alc == AlcModeSelect.VOICE)
-            {
-                ALCLVL = 0b1100;  // -4.5db
-                MAXGAIN = 0b101;  // +23.5db
-                MINGAIN = 0b010;  // 0db
-                ALCDCY = 0b0001;  // 820us/step
-                ALCATK = 0b0010;  // 416us/step
-                NGTH = 0b11000;   // -40.5db
-                NGG = 0b01;       // mute ADC
-                res &= I2cWrite(Register.ES8388_ADCCONTROL1, 0x77);
-            }
-            res &= I2cWrite(Register.ES8388_ADCCONTROL10, (byte)(ALCSEL << 6 | MAXGAIN << 3 | MINGAIN));
-            res &= I2cWrite(Register.ES8388_ADCCONTROL11, (byte)(ALCLVL << 4 | ALCHLD));
-            res &= I2cWrite(Register.ES8388_ADCCONTROL12, (byte)(ALCDCY << 4 | ALCATK));
-            res &= I2cWrite(Register.ES8388_ADCCONTROL13, (byte)(ALCMODE << 7 | ALCZC << 6 | TIME_OUT << 5 | WIN_SIZE));
-            res &= I2cWrite(Register.ES8388_ADCCONTROL14, (byte)(NGTH << 3 | NGG << 2 | NGAT));
-
-            return res;
-        }
-
-        // MIXIN1 – direct IN1 (default)
-        // MIXIN2 – direct IN2
-        // MIXRES – reserved es8388
-        // MIXADC – ADC/ALC input (after mic amplifier)
-        public bool MixerSourceSelect(MixSelect LMIXSEL, MixSelect RMIXSEL)
-        {
-            bool res = true;
-            byte reg = (byte)((byte)LMIXSEL << 3 | (byte)RMIXSEL);
-            res &= I2cWrite(Register.ES8388_DACCONTROL16, reg);
-            return res;
-        }
-
-        // Mixer source control
-        // DACOUT -> Select Sink From DAC
-        // SRCSEL -> Select Sink From SourceSelect()
-        // MIXALL -> Sink DACOUT + SRCSEL
-        public bool MixerSourceControl(MixerControl mix)
-        {
-            if (mix == MixerControl.DACOUT)
-                return MixerSourceControl(true, false, 2, true, false, 2);
-            if (mix == MixerControl.SRCSELOUT)
-                return MixerSourceControl(false, true, 2, false, true, 2);
-            if (mix == MixerControl.MIXALL)
-                return MixerSourceControl(true, true, 2, true, true, 2);
-            return false;
-        }
-
-        // LD/RD = DAC(i2s), false disable, true enable
-        // LI2LO/RI2RO from mixerSourceSelect(), false disable, true enable
-        // LOVOL = gain, 0 -> 6db, 1 -> 3db, 2 -> 0db, higher will attenuate
-        public bool MixerSourceControl(bool LD2LO, bool LI2LO, byte LI2LOVOL, bool RD2RO, bool RI2RO, byte RI2LOVOL)
-        {
-            bool res = true;
-            int _regL, _regR;
-            if (LI2LOVOL > 7) LI2LOVOL = 7;
-            if (RI2LOVOL > 7) RI2LOVOL = 7;
-            _regL = (Convert.ToByte(LD2LO) << 7) | (Convert.ToByte(LI2LO) << 6) | (LI2LOVOL << 3);
-            _regR = (Convert.ToByte(RD2RO) << 7) | (Convert.ToByte(RI2RO) << 6) | (RI2LOVOL << 3);
-            res &= I2cWrite(Register.ES8388_DACCONTROL17, (byte)_regL);
-            res &= I2cWrite(Register.ES8388_DACCONTROL20, (byte)_regR);
-            return res;
-        }
-
-        // true -> analog out = analog in
-        // false -> analog out = DAC(i2s)
-        public bool AnalogBypass(bool bypass)
-        {
-            bool res = true;
-            if (bypass)
-            {
-                if (_inSelect == InSelect.IN1)
-                    MixerSourceSelect(MixSelect.MIXIN1, MixSelect.MIXIN1);
-                else if (_inSelect == InSelect.IN2)
-                    MixerSourceSelect(MixSelect.MIXIN2, MixSelect.MIXIN2);
-                MixerSourceControl(false, true, 2, false, true, 2);
+                res |= I2cWrite(Register.ES8388_DACCONTROL16, 0x09); // 0x00 audio on LIN1&RIN1,  0x09 LIN2&RIN2 by pass enable
+                res |= I2cWrite(Register.ES8388_DACCONTROL17, 0x50); // left DAC to left mixer enable  and  LIN signal to left mixer enable 0db  : bupass enable
+                res |= I2cWrite(Register.ES8388_DACCONTROL20, 0x50); // right DAC to right mixer enable  and  LIN signal to right mixer enable 0db : bupass enable
+                res |= I2cWrite(Register.ES8388_DACCONTROL21, 0xC0); //enable adc
             }
             else
             {
-                MixerSourceControl(true, false, 2, true, false, 2);
+                res |= I2cWrite(Register.ES8388_DACCONTROL21, 0x80);   //enable dac
+            }
+            byte data = I2cRead(Register.ES8388_DACCONTROL21);
+            if (prev_data != data)
+            {
+                res |= I2cWrite(Register.ES8388_CHIPPOWER, 0xF0);   //start state machine
+                                                                    // res |= I2cWrite(Register.ES8388_CONTROL1, 0x16);
+                                                                    // res |= I2cWrite(Register.ES8388_CONTROL2, 0x50);
+                res |= I2cWrite(Register.ES8388_CHIPPOWER, 0x00);   //start state machine
+            }
+            if (mode == Module.ES_MODULE_ADC || mode == Module.ES_MODULE_ADC_DAC || mode == Module.ES_MODULE_LINE)
+            {
+                res |= I2cWrite(Register.ES8388_ADCPOWER, 0x00);   //power up adc and line in
+            }
+            if (mode == Module.ES_MODULE_DAC || mode == Module.ES_MODULE_ADC_DAC || mode == Module.ES_MODULE_LINE)
+            {
+                res |= I2cWrite(Register.ES8388_DACPOWER, 0x3c);   //power up dac and line out
+                res |= es8388_set_voice_mute(false);
+            }
+
+            return res;
+        }
+
+        int es8388_stop(Module mode)
+        {
+            int res = 1;
+            if (mode == Module.ES_MODULE_LINE)
+            {
+                res |= I2cWrite(Register.ES8388_DACCONTROL21, 0x80); //enable dac
+                res |= I2cWrite(Register.ES8388_DACCONTROL16, 0x00); // 0x00 audio on LIN1&RIN1,  0x09 LIN2&RIN2
+                res |= I2cWrite(Register.ES8388_DACCONTROL17, 0x90); // only left DAC to left mixer enable 0db
+                res |= I2cWrite(Register.ES8388_DACCONTROL20, 0x90); // only right DAC to right mixer enable 0db
+                return res;
+            }
+            if (mode == Module.ES_MODULE_DAC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                res |= I2cWrite(Register.ES8388_DACPOWER, 0x00);
+                res |= es8388_set_voice_mute(true);
+                //res |= Es8388SetAdcDacVolume(ES_MODULE_DAC, -96, 5);      // 0db
+                //res |= I2cWrite(Register.ES8388_DACPOWER, 0xC0);  //power down dac and line out
+            }
+            if (mode == Module.ES_MODULE_ADC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                //res |= Es8388SetAdcDacVolume(ES_MODULE_ADC, -96, 5);      // 0db
+                res |= I2cWrite(Register.ES8388_ADCPOWER, 0xFF);  //power down adc and line in
+            }
+            if (mode == Module.ES_MODULE_ADC_DAC)
+            {
+                res |= I2cWrite(Register.ES8388_DACCONTROL21, 0x9C);  //disable mclk
+                //        res |= I2cWrite(Register.ES8388_CONTROL1, 0x00);
+                //        res |= I2cWrite(Register.ES8388_CONTROL2, 0x58);
+                //        res |= I2cWrite(Register.ES8388_CHIPPOWER, 0xF3);  //stop state machine
+            }
+
+            return res;
+        }
+
+        int es8388_i2s_config_clock(I2sClock i2sClock)
+        {
+            int res = I2cWrite(Register.ES8388_MASTERMODE, (int)i2sClock.SclkDiv);
+            res |= I2cWrite(Register.ES8388_ADCCONTROL5, (int)i2sClock.LclkDiv);  //ADCFsMode,singel SPEED,RATIO=256
+            res |= I2cWrite(Register.ES8388_DACCONTROL2, (int)i2sClock.LclkDiv);  //ADCFsMode,singel SPEED,RATIO=256
+            return res;
+        }
+
+        int es8388_deinit()
+        {
+            int res = 0;
+            res = I2cWrite(Register.ES8388_CHIPPOWER, 0xFF);  //reset and stop es8388
+            //TODO
+            //# ifdef CONFIG_ESP_LYRAT_V4_3_BOARD
+            //headphone_detect_deinit();
+            //#endif
+            //audio_codec_volume_deinit(dac_vol_handle);
+            return res;
+        }
+
+        public int es8388_init(CodecConfiguration cfg)
+        {
+            int res = 0;
+            //TODO
+            //# ifdef CONFIG_ESP_LYRAT_V4_3_BOARD
+            //            headphone_detect_init(get_headphone_detect_gpio());
+            //#endif
+
+            res |= I2cWrite(Register.ES8388_DACCONTROL3, 0x04);  // 0x04 mute/0x00 unmute&ramp;DAC unmute and  disabled digital volume control soft ramp
+            /* Chip Control and Power Management */
+            res |= I2cWrite(Register.ES8388_CONTROL2, 0x50);
+            res |= I2cWrite(Register.ES8388_CHIPPOWER, 0x00); //normal all and power up all
+
+            // Disable the internal DLL to improve 8K sample rate
+            res |= I2cWrite(0x35, 0xA0);
+            res |= I2cWrite(0x37, 0xD0);
+            res |= I2cWrite(0x39, 0xD0);
+
+            res |= I2cWrite(Register.ES8388_MASTERMODE, (byte)cfg.Mode); //CODEC IN I2S SLAVE MODE
+
+            /* dac */
+            res |= I2cWrite(Register.ES8388_DACPOWER, 0xC0);  //disable DAC and disable Lout/Rout/1/2
+            res |= I2cWrite(Register.ES8388_CONTROL1, 0x12);  //Enfr=0,Play&Record Mode,(0x17-both of mic&paly)
+            //    res |= I2cWrite(Register.ES8388_CONTROL2, 0);  //LPVrefBuf=0,Pdn_ana=0
+            res |= I2cWrite(Register.ES8388_DACCONTROL1, 0x18);//1a 0x18:16bit iis , 0x00:24
+            res |= I2cWrite(Register.ES8388_DACCONTROL2, 0x02);  //DACFsMode,SINGLE SPEED; DACFsRatio,256
+            res |= I2cWrite(Register.ES8388_DACCONTROL16, 0x00); // 0x00 audio on LIN1&RIN1,  0x09 LIN2&RIN2
+            res |= I2cWrite(Register.ES8388_DACCONTROL17, 0x90); // only left DAC to left mixer enable 0db
+            res |= I2cWrite(Register.ES8388_DACCONTROL20, 0x90); // only right DAC to right mixer enable 0db
+            res |= I2cWrite(Register.ES8388_DACCONTROL21, 0x80); // set internal ADC and DAC use the same LRCK clock, ADC LRCK as internal LRCK
+            res |= I2cWrite(Register.ES8388_DACCONTROL23, 0x00); // vroi=0
+            res |= es8388_set_adc_dac_volume(Module.ES_MODULE_DAC, 0, 0);       // 0db
+            DacOutput dacOutput;
+            if (Configuration.DacOutput.AUDIO_HAL_DAC_OUTPUT_LINE2 == cfg.Output)
+            {
+                dacOutput = DacOutput.DAC_OUTPUT_LOUT1 | DacOutput.DAC_OUTPUT_ROUT1;
+            }
+            else if (Configuration.DacOutput.AUDIO_HAL_DAC_OUTPUT_LINE1 == cfg.Output)
+            {
+                dacOutput = DacOutput.DAC_OUTPUT_LOUT2 | DacOutput.DAC_OUTPUT_ROUT2;
+            }
+            else
+            {
+                dacOutput = DacOutput.DAC_OUTPUT_LOUT1 | DacOutput.DAC_OUTPUT_LOUT2 | DacOutput.DAC_OUTPUT_ROUT1 | DacOutput.DAC_OUTPUT_ROUT2;
+            }
+            res |= I2cWrite(Register.ES8388_DACPOWER, (int)dacOutput);  //0x3c Enable DAC and Enable Lout/Rout/1/2
+            /* adc */
+            res |= I2cWrite(Register.ES8388_ADCPOWER, 0xFF);
+            res |= I2cWrite(Register.ES8388_ADCCONTROL1, 0xbb); // MIC Left and Right channel PGA gain
+
+            AdcInput adcInput;
+            if (Configuration.AdcInput.AUDIO_HAL_ADC_INPUT_LINE1 == cfg.Input)
+            {
+                adcInput = AdcInput.ADC_INPUT_LINPUT1_RINPUT1;
+            }
+            else if (Configuration.AdcInput.AUDIO_HAL_ADC_INPUT_LINE2 == cfg.Input)
+            {
+                adcInput = AdcInput.ADC_INPUT_LINPUT2_RINPUT2;
+            }
+            else
+            {
+                adcInput = AdcInput.ADC_INPUT_DIFFERENCE;
+            }
+            res |= I2cWrite(Register.ES8388_ADCCONTROL2, (int)adcInput);  //0x00 LINSEL & RINSEL, LIN1/RIN1 as ADC Input; DSSEL,use one DS Reg11; DSR, LINPUT1-RINPUT1
+            res |= I2cWrite(Register.ES8388_ADCCONTROL3, 0x02);
+            res |= I2cWrite(Register.ES8388_ADCCONTROL4, 0x0d); // Left/Right data, Left/Right justified mode, Bits length, I2S format
+            res |= I2cWrite(Register.ES8388_ADCCONTROL5, 0x02);  //ADCFsMode,singel SPEED,RATIO=256
+                                                                 //ALC for Microphone
+            res |= es8388_set_adc_dac_volume(Module.ES_MODULE_ADC, 0, 0);      // 0db
+            res |= I2cWrite(Register.ES8388_ADCPOWER, 0x09);    // Power on ADC, enable LIN&RIN, power off MICBIAS, and set int1lp to low power mode
+
+            //TODO
+            ///* es8388 PA gpio_config */
+            //gpio_config_t io_conf;
+            //memset(&io_conf, 0, sizeof(io_conf));
+            //io_conf.mode = GPIO_MODE_OUTPUT;
+            //io_conf.pin_bit_mask = BIT64(get_pa_enable_gpio());
+            //io_conf.pull_down_en = 0;
+            //io_conf.pull_up_en = 0;
+            //gpio_config(&io_conf);
+            ///* enable es8388 PA */
+            //es8388_pa_power(true);
+
+            //codec_dac_volume_config_t vol_cfg = ES8388_DAC_VOL_CFG_DEFAULT();
+            //dac_vol_handle = audio_codec_volume_init(&vol_cfg);
+            return res;
+        }
+
+        int es8388_config_fmt(Module mode, I2sFmt fmt)
+        {
+            int res = 1;
+            int reg;
+            if (mode == Module.ES_MODULE_ADC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                reg = I2cRead(Register.ES8388_ADCCONTROL4);
+                reg &= 0xfc;
+                res |= I2cWrite(Register.ES8388_ADCCONTROL4, reg | (int)fmt);
+            }
+            if (mode == Module.ES_MODULE_DAC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                reg = I2cRead(Register.ES8388_DACCONTROL1);
+                reg = reg & 0xf9;
+                res |= I2cWrite(Register.ES8388_DACCONTROL1, reg | ((int)fmt << 1));
             }
             return res;
         }
 
-        private bool I2cWrite(Register reg, byte data)
+        public int es8388_set_voice_volume(int volume)
         {
-            SpanByte writeBuffer = new byte[2] { (byte)reg, data };
+            if (volume < 0)
+                volume = 0;
+            else if (volume > 100)
+                volume = 100;
+            volume /= 3;
+            int res = I2cWrite(Register.ES8388_DACCONTROL4, 0);
+            res |= I2cWrite(Register.ES8388_DACCONTROL5, 0);
+            // ROUT1VOL LOUT1VOL 0 -> -45dB; 33 -> – 4.5dB
+            res |= I2cWrite(Register.ES8388_DACCONTROL24, volume);
+            res |= I2cWrite(Register.ES8388_DACCONTROL25, volume);
+            // DAC LDACVOL RDACVOL default 0 = 0DB; Default value 192 = – -96 dB
+            res |= I2cWrite(Register.ES8388_DACCONTROL26, volume);
+            res |= I2cWrite(Register.ES8388_DACCONTROL27, volume);
+            return res;
+        }
+
+        int es8388_get_voice_volume()
+        {
+            int volume = I2cRead(Register.ES8388_DACCONTROL24);
+            volume *= 3;
+            if (volume == 99)
+            {
+                volume = 100;
+            }
+            return volume;
+        }
+
+        int es8388_set_bits_per_sample(Module mode, BitLength bits_length)
+        {
+            int res = 1;
+            int reg = 0;
+            int bits = (int)bits_length;
+
+            if (mode == Module.ES_MODULE_ADC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                reg = I2cRead(Register.ES8388_ADCCONTROL4);
+                reg &= 0xe3;
+                res |= I2cWrite(Register.ES8388_ADCCONTROL4, reg | (bits << 2));
+            }
+            if (mode == Module.ES_MODULE_DAC || mode == Module.ES_MODULE_ADC_DAC)
+            {
+                reg = I2cRead(Register.ES8388_DACCONTROL1);
+                reg &= 0xc7;
+                res |= I2cWrite(Register.ES8388_DACCONTROL1, reg | (bits << 3));
+            }
+            return res;
+        }
+
+        int es8388_set_voice_mute(bool enable)
+        {
+            int res = 1;
+            int reg = I2cRead(Register.ES8388_DACCONTROL3);
+            reg &= 0xFB;
+            res |= I2cWrite(Register.ES8388_DACCONTROL3, reg | ((enable ? 1 : 0) << 2));
+            return res;
+        }
+
+        int es8388_get_voice_mute()
+        {
+            //TODO
+            return 1;
+        }
+
+        int es8388_config_dac_output(int output)
+        {
+            int res = 1;
+            int reg = I2cRead(Register.ES8388_DACPOWER);
+            reg &= 0xc3;
+            res |= I2cWrite(Register.ES8388_DACPOWER, reg | output);
+            return res;
+        }
+
+        int es8388_config_adc_input(AdcInput input)
+        {
+            int res = 1;
+            int reg = I2cRead(Register.ES8388_ADCCONTROL2);
+            reg &= 0x0f;
+            res |= I2cWrite(Register.ES8388_ADCCONTROL2, reg | (int)input);
+            return res;
+        }
+
+        int es8388_set_mic_gain(MicGain gain)
+        {
+            int res, gain_n;
+            gain_n = (int)gain / 3;
+            gain_n = (gain_n << 4) + gain_n;
+            res = I2cWrite(Register.ES8388_ADCCONTROL1, gain_n); //MIC PGA
+            return res;
+        }
+
+        public int es8388_ctrl_state(CodecMode mode, HalCtrl ctrl_state)
+        {
+            Module es_mode_t;
+            switch (mode)
+            {
+                case CodecMode.AUDIO_HAL_CODEC_MODE_ENCODE:
+                    es_mode_t = Module.ES_MODULE_ADC;
+                    break;
+                case CodecMode.AUDIO_HAL_CODEC_MODE_LINE_IN:
+                    es_mode_t = Module.ES_MODULE_LINE;
+                    break;
+                case CodecMode.AUDIO_HAL_CODEC_MODE_DECODE:
+                    es_mode_t = Module.ES_MODULE_DAC;
+                    break;
+                case CodecMode.AUDIO_HAL_CODEC_MODE_BOTH:
+                    es_mode_t = Module.ES_MODULE_ADC_DAC;
+                    break;
+                default:
+                    es_mode_t = Module.ES_MODULE_DAC;
+                    break;
+            }
+            int res;
+            if (HalCtrl.AUDIO_HAL_CTRL_STOP == ctrl_state)
+            {
+                res = es8388_stop(es_mode_t);
+            }
+            else
+            {
+                res = es8388_start(es_mode_t);
+            }
+            return res;
+        }
+
+        public int es8388_config_i2s(I2sFmt fmt, IfaceBits bits)
+        {
+            int res = 1;
+            BitLength tmp;
+            res |= es8388_config_fmt(Module.ES_MODULE_ADC_DAC, fmt);
+            if (bits == IfaceBits.AUDIO_HAL_BIT_LENGTH_16BITS)
+            {
+                tmp = BitLength.BIT_LENGTH_16BITS;
+            }
+            else if (bits == IfaceBits.AUDIO_HAL_BIT_LENGTH_24BITS)
+            {
+                tmp = BitLength.BIT_LENGTH_24BITS;
+            }
+            else
+            {
+                tmp = BitLength.BIT_LENGTH_32BITS;
+            }
+            res |= es8388_set_bits_per_sample(Module.ES_MODULE_ADC_DAC, tmp);
+            return res;
+        }
+
+        void es8388_pa_power(bool enable)
+        {
+            //TODO
+        }
+
+        private int I2cWrite(Register reg, int data)
+        {
+            return I2cWrite((byte)reg, data);
+        }
+
+        private int I2cWrite(byte reg, int data)
+        {
+            Debug.WriteLine($"Debug:   i2c_bus_write_bytes: addr=32 reglen=1 datalen=1 - reg={reg} value={data}");
+            SpanByte writeBuffer = new byte[2] { reg, (byte)data };
             var writeTransferResult = _i2cDevice.Write(writeBuffer);
-            return writeTransferResult.Status == I2cTransferStatus.FullTransfer;
+            return writeTransferResult.Status == I2cTransferStatus.FullTransfer ? 1 : 0;
         }
 
         private byte I2cRead(Register reg)
