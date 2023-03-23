@@ -1,6 +1,6 @@
 ﻿namespace Es8388
 {
-    internal enum Register
+    enum Register
     {
         ES8388_CONTROL1 = 0x00,
         ES8388_CONTROL2 = 0x01,
