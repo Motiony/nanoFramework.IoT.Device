@@ -1,6 +1,6 @@
-﻿namespace Es8388.Configuration
+﻿namespace Es8388
 {
-    public enum AdcInput
+    public enum Input
     {
         AUDIO_HAL_ADC_INPUT_LINE1 = 0x00,  /*!< mic input to adc channel 1 */
         AUDIO_HAL_ADC_INPUT_LINE2,         /*!< mic input to adc channel 2 */
@@ -8,7 +8,7 @@
         AUDIO_HAL_ADC_INPUT_DIFFERENCE,    /*!< mic input to adc difference channel */
     }
 
-    public enum DacOutput
+    public enum Output
     {
         AUDIO_HAL_DAC_OUTPUT_LINE1 = 0x00,  /*!< dac output signal to channel 1 */
         AUDIO_HAL_DAC_OUTPUT_LINE2,         /*!< dac output signal to channel 2 */

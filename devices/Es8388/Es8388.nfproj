@@ -18,8 +18,8 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Configuration\CodecConfiguration.cs" />
-    <Compile Include="Configuration\ConfigurationOptions.cs" />
+    <Compile Include="CodecConfiguration.cs" />
+    <Compile Include="ConfigurationOptions.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Es8388.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

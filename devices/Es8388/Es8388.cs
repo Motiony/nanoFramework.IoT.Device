@@ -1,5 +1,4 @@
-﻿using Es8388.Configuration;
-using System;
+﻿using System;
 using System.Device.I2c;
 
 namespace Es8388
@@ -43,11 +42,11 @@ namespace Es8388
             res |= I2cWrite(Register.ES8388_DACCONTROL23, 0x00); // vroi=0
             res |= SetAdcDacVolume(Module.ES_MODULE_DAC, 0, 0);       // 0db
             DacOutput dacOutput;
-            if (Configuration.DacOutput.AUDIO_HAL_DAC_OUTPUT_LINE2 == cfg.Output)
+            if (Output.AUDIO_HAL_DAC_OUTPUT_LINE2 == cfg.Output)
             {
                 dacOutput = DacOutput.DAC_OUTPUT_LOUT1 | DacOutput.DAC_OUTPUT_ROUT1;
             }
-            else if (Configuration.DacOutput.AUDIO_HAL_DAC_OUTPUT_LINE1 == cfg.Output)
+            else if (Output.AUDIO_HAL_DAC_OUTPUT_LINE1 == cfg.Output)
             {
                 dacOutput = DacOutput.DAC_OUTPUT_LOUT2 | DacOutput.DAC_OUTPUT_ROUT2;
             }
@@ -61,11 +60,11 @@ namespace Es8388
             res |= I2cWrite(Register.ES8388_ADCCONTROL1, 0xbb); // MIC Left and Right channel PGA gain
 
             AdcInput adcInput;
-            if (Configuration.AdcInput.AUDIO_HAL_ADC_INPUT_LINE1 == cfg.Input)
+            if (Input.AUDIO_HAL_ADC_INPUT_LINE1 == cfg.Input)
             {
                 adcInput = AdcInput.ADC_INPUT_LINPUT1_RINPUT1;
             }
-            else if (Configuration.AdcInput.AUDIO_HAL_ADC_INPUT_LINE2 == cfg.Input)
+            else if (Input.AUDIO_HAL_ADC_INPUT_LINE2 == cfg.Input)
             {
                 adcInput = AdcInput.ADC_INPUT_LINPUT2_RINPUT2;
             }
