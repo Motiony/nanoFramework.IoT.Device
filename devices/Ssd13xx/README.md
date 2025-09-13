@@ -1,4 +1,4 @@
-# SSD13xx & SSH1106 OLED display family
+# SSD13xx/SSD1306/SSD1327 & SSH1106 - OLED display family
 
 The SSD1306/SSH1106 are a single-chip CMOS OLED/PLED driver with controllers for organic/polymer light emitting diode dot-matrix graphic display system. It consists of 128 segments and 64 commons. This IC is designed for Common Cathode type OLED panel.
 
@@ -26,6 +26,7 @@ Version with 7-pin I2C/SPI
 Address on the I2C bus: Ssd1306.SecondaryI2cAddress 0x3D
 
 Connecting resistors:
+
 - I2C — R1, R4, R8;
 - SPI — R3, R4.
 
@@ -35,7 +36,7 @@ For only I2C
 
 ![Connection schematics](https://raw.githubusercontent.com/nanoframework/nanoFramework.IoT.Device/develop/devices/Ssd13xx/Ssd1306_OLED_128x64_I2C_SPI.png)
 
-### Connection table:
+### Connection table
 
 | Pin No: | Pin Name: | Description: |
 | ------------ | ------------ | ------------ |
@@ -67,15 +68,14 @@ There are two groups of drawing methods.
     - ````DrawFilledRectangle(...)````: draws a filled rectangle
     - ````DrawBitmap(...)````: draws a bitmap
     - ````DrawString(...)````: draws a string with preset font
-    
-    Using these methods you do not need to care about any technique the driver uses to display 
-    your drawing instructions.
-   
+
+    Using these methods you do not need to care about any technique the driver uses to display your drawing instructions.
+
 2. Methods allowing to modify screen content by blocks of internal representation (screen buffer), like:
     - ````DrawDirectAligned(...)````: overwrites screen buffer with given content
     - ````ClearDirectAligned(...)````: clears out (with 0x00) given part of screen buffer
-    
-    These methods allow faster (~100 times) display access but with some constraints. 
+
+    These methods allow faster (~100 times) display access but with some constraints.
     - bitmaps handed over here must be in appropriate format (see SSD13xx docs for "GDDRAM" and "Horizontal addressing mode").
     - no bit operations occure with existing buffer data (with pixels drawn via other means), the new data will overwrite the pixels "below" newly drawed content.
     - the "y" coordinate and the bitmap height must be byte aligned with screen buffer (again, see above docs)
@@ -126,3 +126,45 @@ device.Display();
 Follows the output on the display:
 
 ![double-byte.fonts](./display-with-double-byte-chars.jpg)
+
+## Fonts
+
+Fonts can be used following the [IFont](./IFont.cs) implementation.
+
+Sample fonts are provided both in the [sample directory](./samples/) and in the [additional font one](./Additionnal_Fonts/). A tool called `Bitmap2Font` is also provided helping to automatically generate the Font class. In short, it can take any black and white image of fixed size font and generate the Font class. More [information here](./Bitmap2Font/).
+
+## IotByteFont: .NET Dot Matrix Font Creator Tool
+
+[IotByteFont](https://github.com/sangyuxiaowu/IotByteFont) is a .NET dot matrix font creation tool. It can load your favorite font files and generate custom dot matrix font code.
+
+### Installation
+
+You can install the IotByteFont tool with the following command:
+
+```bash
+dotnet tool install -g IotByteFont
+```
+
+### Usage
+
+Here are the command-line options for the IotByteFont tool:
+
+| Option | Default Value | Description |
+| ------ | ------------- | ----------- |
+| -f, --font | Microsoft YaHei UI | Font file path or font name. |
+| -c, --char | chars.txt | Char file path or char string. |
+| -s, --size | 16 | Font size. |
+| -w, --width | 0 | Font width. 0 means same as font size. |
+| -y, --yoffset | 0.75 | Font y offset. size * y. Not recommended to adjust. Adjust with debug mode. |
+| -t, --threshold | 128 | Threshold for binarization. |
+| -n, --name | IotByteFont | Output class name. |
+| -d, --debug | false | Debug mode. Print debug info and bitmap. |
+
+### Example
+
+When creating a font, you need to specify the font file or font name, the characters to include in the font, and the size of the font. You can also specify the width of the font, the y offset, and the name of the output class. Turning on debug mode can print debug information and the final font bitmap.
+
+```bash
+IotByteFont --char "abcde功夫＄" --size 8
+IotByteFont --font ms.ttf --char chars.txt --yoffset 0.6 --name MyFont --debug
+```

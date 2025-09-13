@@ -6,122 +6,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Text.Json;
 using Iot.Tools.DeviceListing;
 
-string[] categoriesToDisplay = new string[]
-{
-    "adc",
-    "accelerometer",
-    "gas",
-    "liquid",
-    "light",
-    "barometer",
-    "altimeter",
-    "thermometer",
-    "infrared",
-    "gyroscope",
-    "compass",
-    "lego",
-    "motor",
-    "imu",
-    "magnetometer",
-    "hygrometer",
-    "clock",
-    "sonar",
-    "distance",
-    "pir",
-    "motion",
-    "display",
-    "io-expander",
-    "canbus",
-    "proximity",
-    "touch",
-    "wireless",
-    "joystick",
-    "color",
-    "led",
-    "nfc",
-    "media",
-    "usb",
-    "gpio",
-    "multi",
-    "protocol",
-    "power",
-    "dac",
-    "eeprom",
-    "helper",
-    "system",
-    "lidar",
-    "reader",
-    "satellite",
-    "particulatematter",
-};
-
-Dictionary<string, string?> categoriesDescriptions = new()
-{
-    { "adc", "Analog/Digital converters" },
-    { "accelerometer", "Accelerometers" },
-    { "voc", "Volatile Organic Compound sensors" },
-    { "gas", "Gas sensors" },
-    { "liquid", "Liquid sensors" },
-    { "light", "Light sensor" },
-    { "barometer", "Barometers" },
-    { "altimeter", "Altimeters" },
-    { "thermometer", "Thermometers" },
-    { "infrared", "Infrared sensors" },
-    { "gyroscope", "Gyroscopes" },
-    { "compass", "Compasses" },
-    { "lego", "Lego related devices" },
-    { "motor", "Motor controllers/drivers" },
-    { "imu", "Inertial Measurement Units" },
-    { "magnetometer", "Magnetometers" },
-    { "lcd", "Liquid Crystal Displays" },
-    { "hygrometer", "Hygrometers" },
-    { "rtc", "Real Time Clocks" },
-    { "clock", "Clocks" },
-    { "sonar", "Sonars" },
-    { "distance", "Distance sensors" },
-    { "pir", "Passive InfraRed (motion) sensors" },
-    { "motion", "Motion sensors" },
-    { "display", "Displays" },
-    { "segment", "Segment displays" },
-    { "io-expander", "GPIO Expanders" },
-    { "canbus", "CAN BUS libraries/modules" },
-    { "proximity", "Proximity sensors" },
-    { "touch", "Touch sensors" },
-    { "wireless", "Wireless communication modules" },
-    { "radio", "Radio modules" },
-    { "pwm", "PWM libraries/modules" },
-    { "spi", "SPI libraries/modules" },
-    { "joystick", "Joysticks" },
-    { "color", "Color sensors" },
-    { "led", "LED drivers" },
-    { "nfc", "RFID/NFC modules" },
-    { "media", "Media libraries" },
-    { "usb", "USB devices" },
-    { "gpio", "GPIO or bit operating devices" },
-    { "power", "Power monitors and related devices" },
-    { "multi", "Multi-device or robot kit" },
-    // Bucket for stuff we want mentioned but there is no clear category
-    // In other words: anything allowing a way to create PWM channel, SPI/I2C/... device
-    { "protocol", "Protocols providers/libraries" },
-    { "characterlcd", null },
-    { "brickpi3", null },
-    { "buzzer", null },
-    { "gopigo3", null },
-    { "grovepi", null },
-    { "i2c", null },
-    { "multiplexer", null },
-    { "dac", "Digital/Analog converters" },
-    { "eeprom", "EEPROM" },
-    { "helper", "Iot.Device helpers and common" },
-    { "system", ".NET System libraries" },
-    { "lidar", "Lidar" },
-    { "reader", "Readers" },
-    { "satellite", " modules" },
-    { "particulatematter", "Particulate Matter Sensor" },
-};
+Dictionary<string, string?> categoriesDescriptions = JsonSerializer.Deserialize<Dictionary<string, string?>>(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "categories.json")));
 
 HashSet<string> ignoredDeviceDirectories = new()
 {
@@ -130,7 +18,16 @@ HashSet<string> ignoredDeviceDirectories = new()
     "Interop",
 };
 
-var repoRootPath = Path.Combine(Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY"), "nanoFramework.IoT.Device");
+string repoRootPath;
+if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY")))
+{
+    repoRootPath = Path.Combine(Environment.GetEnvironmentVariable("BUILD_SOURCESDIRECTORY"), "nanoFramework.IoT.Device");
+}
+else
+{
+    // Find the first directory that contains a .git folder
+    repoRootPath = FindGitRepositoryRoot(Environment.CurrentDirectory);
+}
 
 Console.WriteLine($"Finding repository root. Starting point is: {repoRootPath}");
 
@@ -191,7 +88,7 @@ foreach (DeviceInfo device in devices)
             }
         }
 
-        beingDisplayed |= !beingDisplayed && categoriesToDisplay.Contains(category);
+        beingDisplayed |= !beingDisplayed && categoriesDescriptions.Keys.Contains(category);
     }
 
     if (!beingDisplayed && device.CategoriesFileExists)
@@ -214,25 +111,7 @@ string GetDeviceListing(string devicesPath, IEnumerable<DeviceInfo> devices)
     var deviceListing = new StringBuilder();
     foreach (DeviceInfo device in devices)
     {
-        if (device.Name.StartsWith("System"))
-        {
-            deviceListing.AppendLine($"* [![NuGet](https://img.shields.io/nuget/v/nanoFramework.{device.Name}.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoFramework.{device.Name}/) [{device.Title}]({CreateMarkdownLinkFromPath(device.ReadmePath, devicesPath)})");
-        }
-        else
-        {
-            if ((device.Name == "NumberHelper") || (device.Name == "WeatherHelper"))
-            {
-                deviceListing.AppendLine($"* [![NuGet](https://img.shields.io/nuget/v/nanoFramework.IoT.Device.Common.{device.Name}.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoFramework.IoT.Device.Common.{device.Name}/) [{device.Title}]({CreateMarkdownLinkFromPath(device.ReadmePath, devicesPath)})");
-            }
-            else if (device.Name == "Card")
-            {
-                deviceListing.AppendLine($"* [![NuGet](https://img.shields.io/nuget/v/nanoFramework.IoT.Device.Card.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoFramework.IoT.Device.Card/) [{device.Title}]({CreateMarkdownLinkFromPath(device.ReadmePath, devicesPath)})");
-            }
-            else
-            {
-                deviceListing.AppendLine($"* [![NuGet](https://img.shields.io/nuget/v/nanoFramework.IoT.Device.{device.Name}.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/nanoFramework.IoT.Device.{device.Name}/) [{device.Title}]({CreateMarkdownLinkFromPath(device.ReadmePath, devicesPath)})");
-            }
-        }
+        deviceListing.AppendLine($"* [![NuGet](https://img.shields.io/nuget/v/{device.NuGetPackageId}.svg?label=NuGet&style=flat&logo=nuget)](https://www.nuget.org/packages/{device.NuGetPackageId}/) [{device.Title}]({CreateMarkdownLinkFromPath(device.ReadmePath, devicesPath)})");
     }
 
     return deviceListing.ToString();
@@ -241,7 +120,7 @@ string GetDeviceListing(string devicesPath, IEnumerable<DeviceInfo> devices)
 string GetCategorizedDeviceListing(string devicesPath, IEnumerable<DeviceInfo> devices)
 {
     var deviceListing = new StringBuilder();
-    foreach (string categoryToDisplay in categoriesToDisplay)
+    foreach (string categoryToDisplay in categoriesDescriptions.Keys)
     {
         if (categoriesDescriptions.TryGetValue(categoryToDisplay, out string? categoryDescription))
         {
@@ -289,7 +168,8 @@ string CreateMarkdownLinkFromPath(string path, string parentPath)
             throw new Exception($"No common path between `{path}` and `{parentPath}`");
         }
 
-        var relativePath = path.Substring(parentPath.Length + 1); // Removing this code for now to allow the docs to build properly, experience is still very good on GitHub: .Replace("\\README.md", "");
+        // Removing this code for now to allow the docs to build properly, experience is still very good on GitHub: .Replace("\\README.md", "");
+        var relativePath = path.Substring(parentPath.Length + 1).Replace("\\README.md", "");
         UriBuilder uriBuilder = new UriBuilder() { Path = relativePath };
 
         return uriBuilder.Path;
@@ -329,4 +209,21 @@ void ReplacePlaceholder(string filePath, string placeholderName, string newConte
         Environment.NewLine +
         newContent +
         fileContent.Substring(endIdx));
+}
+
+string? FindGitRepositoryRoot(string startDirectory)
+{
+    DirectoryInfo? currentDirectory = new DirectoryInfo(startDirectory);
+
+    while (currentDirectory != null)
+    {
+        if (Directory.Exists(Path.Combine(currentDirectory.FullName, ".git")))
+        {
+            return currentDirectory.FullName;
+        }
+
+        currentDirectory = currentDirectory.Parent;
+    }
+
+    return null;
 }

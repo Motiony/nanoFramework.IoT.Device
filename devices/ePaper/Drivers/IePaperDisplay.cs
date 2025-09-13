@@ -3,9 +3,9 @@
 
 using System;
 using System.Drawing;
-
+using System.Threading;
 using Iot.Device.EPaper.Buffers;
-using Iot.Device.EPaper.Primitives;
+using nanoFramework.UI;
 
 namespace Iot.Device.EPaper.Drivers
 {
@@ -55,12 +55,14 @@ namespace Iot.Device.EPaper.Drivers
         /// <summary>
         /// Initiates the full refresh sequence on the display.
         /// </summary>
-        void PerformFullRefresh();
+        /// <returns>True if the screen sucessfully refresh. False otherwise (still busy after a predefined waiting time).</returns>
+        bool PerformFullRefresh();
 
         /// <summary>
         /// Initiates the partial refresh sequence on the display if the panel supports it.
         /// </summary>
-        void PerformPartialRefresh();
+        /// <returns>True if the screen sucessfully refresh. False otherwise (still busy after a predefined waiting time).</returns>
+        bool PerformPartialRefresh();
 
         /// <summary>
         /// Sets the drawing position on the display.
@@ -90,9 +92,18 @@ namespace Iot.Device.EPaper.Drivers
         void SendData(params byte[] data);
 
         /// <summary>
+        /// Send frame data to the display.
+        /// </summary>
+        /// <param name="data">The frame data to send.</param>
+        void SendData(params ushort[] data);
+
+        /// <summary>
         /// Blocks the current thread until the display is in idle mode again.
         /// </summary>
-        void WaitReady();
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to be able to cancel the waiting time.</param>
+        /// <returns>True if it returns before the <see cref="CancellationToken"/> expires, false otherwise.</returns>
+        /// <remarks>If cancellationToken is null, this method will block until the busy pin is low.</remarks>
+        bool WaitReady(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Begins a frame draw operation with frame paging support.
@@ -109,7 +120,7 @@ namespace Iot.Device.EPaper.Drivers
         /// <summary>
         /// Moves the current buffers to the next frame page and returns true if successful.
         /// </summary>
-        /// <returns>True if the next frame page is available and the internal buffers have moved to it, otherwise; false.</returns>
+        /// <returns>True if the next frame page is available and the internal buffers have moved to it, false otherwise.</returns>
         bool NextFramePage();
 
         /// <summary>
