@@ -22,9 +22,9 @@
       },
       "nanoFramework.System.Device.Wifi": {
         "type": "Direct",
-        "requested": "[1.5.134, 1.5.134]",
-        "resolved": "1.5.134",
-        "contentHash": "X3PzWhOjt2ln3FiYuNB3uTuQbemoNBTHyBHh7ln/udZSNkJTyJYF2N3RdYKQWogBmUDcE0eK8ELHU8FkWJ6y8g=="
+        "requested": "[1.5.139, 1.5.139]",
+        "resolved": "1.5.139",
+        "contentHash": "UlqtYaj99lx0x/Iqi6V/QqDHWGG960vDd6//i7g91F31wKtrEU/KqXDrVkekU8aAZRFC5BwkDGLJ9X+KyJs49A=="
       },
       "nanoFramework.System.IO.Streams": {
         "type": "Direct",
@@ -34,15 +34,15 @@
       },
       "nanoFramework.System.Net": {
         "type": "Direct",
-        "requested": "[1.11.43, 1.11.43]",
-        "resolved": "1.11.43",
-        "contentHash": "USwz59gxcNUzsiXfQohWSi8ANNwGDsp+qG4zBtHZU3rKMtvTsLI3rxdfMC77VehKqsCPn7aK3PU2oCRFo+1Rgg=="
+        "requested": "[1.11.47, 1.11.47]",
+        "resolved": "1.11.47",
+        "contentHash": "fPjTPfaqDiirh9AysBLlEX5/KbaOliSxyspwpBTcM5OupCNjVXz0aZ9fOWex+BMjZei6GpG74kP8Z4ml912pcw=="
       },
       "nanoFramework.System.Net.Http.Server": {
         "type": "Direct",
-        "requested": "[1.5.196, 1.5.196]",
-        "resolved": "1.5.196",
-        "contentHash": "cjr5Rj39duOjGcyvo/LMFdoeTeLg0zpFgFB7wJUXw0+65EiENEnJwqqR1CfbJEvBBpBMJdH/yLkK/8DU8Jk3XQ=="
+        "requested": "[1.5.200, 1.5.200]",
+        "resolved": "1.5.200",
+        "contentHash": "no7P7xTkZ7IVSPKeI4YMIBG11YdsHH76hjC4XRaZsohPdsUcLOZbsoonLaQ8VW9l89QLrliYSREgN4C2l6I1mw=="
       },
       "nanoFramework.System.Text": {
         "type": "Direct",
@@ -58,9 +58,9 @@
       },
       "nanoFramework.WebServer": {
         "type": "Direct",
-        "requested": "[1.2.126, 1.2.126]",
-        "resolved": "1.2.126",
-        "contentHash": "9GRCYk6kAXTBLZboFE7r4paMiZE4YoZrmyp6eoYMEanhJBIxsY6yIqhMZx++vBlDKS5af3p+zvOLCHoDvqCQ9g=="
+        "requested": "[1.2.134, 1.2.134]",
+        "resolved": "1.2.134",
+        "contentHash": "Cw9TtVvchLS+Snu7KCe00vQmXhaGxosLzMq3G+2jsL9hiICR2SV/pAYp01sO7hCJT5k86F6RposVQy/ByKIJtw=="
       }
     }
   }
