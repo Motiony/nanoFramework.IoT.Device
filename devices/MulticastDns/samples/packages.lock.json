@@ -22,9 +22,9 @@
       },
       "nanoFramework.System.Device.Wifi": {
         "type": "Direct",
-        "requested": "[1.5.134, 1.5.134]",
-        "resolved": "1.5.134",
-        "contentHash": "X3PzWhOjt2ln3FiYuNB3uTuQbemoNBTHyBHh7ln/udZSNkJTyJYF2N3RdYKQWogBmUDcE0eK8ELHU8FkWJ6y8g=="
+        "requested": "[1.5.141, 1.5.141]",
+        "resolved": "1.5.141",
+        "contentHash": "D9cDgHmsWc3Ick+P69OBKgzDMg0UT4n0kUx/4vkESpbnUCfW1Ed0uJ4aFZAtf4MQzFGKO8dolzHEmFachHMzwg=="
       },
       "nanoFramework.System.IO.Streams": {
         "type": "Direct",
@@ -34,15 +34,15 @@
       },
       "nanoFramework.System.Net": {
         "type": "Direct",
-        "requested": "[1.11.43, 1.11.43]",
-        "resolved": "1.11.43",
-        "contentHash": "USwz59gxcNUzsiXfQohWSi8ANNwGDsp+qG4zBtHZU3rKMtvTsLI3rxdfMC77VehKqsCPn7aK3PU2oCRFo+1Rgg=="
+        "requested": "[1.11.50, 1.11.50]",
+        "resolved": "1.11.50",
+        "contentHash": "5tCFNg+yXGAKOGP4cxFLdr+xM4r/za25I9zjom6ZiKGT5i5K+N2zCCr8TA8UmnQRl7xvBRUZ2vSxFF47OMqXwg=="
       },
       "nanoFramework.System.Net.Http.Server": {
         "type": "Direct",
-        "requested": "[1.5.196, 1.5.196]",
-        "resolved": "1.5.196",
-        "contentHash": "cjr5Rj39duOjGcyvo/LMFdoeTeLg0zpFgFB7wJUXw0+65EiENEnJwqqR1CfbJEvBBpBMJdH/yLkK/8DU8Jk3XQ=="
+        "requested": "[1.5.203, 1.5.203]",
+        "resolved": "1.5.203",
+        "contentHash": "cEQQP7VM6CHdlRyxloA7Z9Pv9s8heFpwp+MpPn9Xk0Fn9/I2l4X4GV4CgDDnKCNSdbyXWREa9ccmZ73WZr7ucw=="
       },
       "nanoFramework.System.Text": {
         "type": "Direct",
@@ -58,9 +58,9 @@
       },
       "nanoFramework.WebServer": {
         "type": "Direct",
-        "requested": "[1.2.126, 1.2.126]",
-        "resolved": "1.2.126",
-        "contentHash": "9GRCYk6kAXTBLZboFE7r4paMiZE4YoZrmyp6eoYMEanhJBIxsY6yIqhMZx++vBlDKS5af3p+zvOLCHoDvqCQ9g=="
+        "requested": "[1.2.140, 1.2.140]",
+        "resolved": "1.2.140",
+        "contentHash": "6PX8mYtjD2zHYaQQN7V4dWGwLNB3Zjss1plMqR7qG958TPsLNNv5AKELrJ5PYYb2DNxJNnU8Qv7NwYut4XwT7g=="
       }
     }
   }
