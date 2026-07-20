@@ -19,11 +19,11 @@
     <tags>nanoFramework C# csharp netmf netnf Iot.Device.Mhz19b</tags>
     <dependencies>
       <dependency id="nanoFramework.CoreLibrary" version="1.17.11" />
-      <dependency id="nanoFramework.Runtime.Events" version="1.11.32" />
+      <dependency id="nanoFramework.Runtime.Events" version="1.11.37" />
       <dependency id="nanoFramework.System.Device.Model" version="1.2.862" />
-      <dependency id="nanoFramework.System.IO.Ports" version="1.1.132" />
+      <dependency id="nanoFramework.System.IO.Ports" version="1.1.139" />
       <dependency id="nanoFramework.System.IO.Streams" version="1.1.96" />
-      <dependency id="UnitsNet.nanoFramework.VolumeConcentration" version="5.75.0" />
+      <dependency id="UnitsNet.nanoFramework.VolumeConcentration" version="5.75.1" />
     </dependencies>
   </metadata>
   <files>
