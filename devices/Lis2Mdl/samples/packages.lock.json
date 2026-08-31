@@ -34,15 +34,15 @@
       },
       "UnitsNet.nanoFramework.MagneticField": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "MYQnNbaGjI4v6HBqhIfAlzZCAFY9FwEfJ6TAZCQa0uzrH9deoTk1/Q0n3U0B1mG7ciJjU8ARyOtpiFfg3Y8Jdw=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "kSMvVUrLVneOXFHOPN7NSi7ureF8fCuUzNDACuvSN9BEFZycYdNHC73aFFNqRgog2S2MBUbnqG+h0fbKdpq09w=="
       },
       "UnitsNet.nanoFramework.Temperature": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "SpA9Z7T1sNaR7YBCYp+L9/ei1bjDkqi8PyPfOWVBjkWInuPSOQaPG9Y7UttIpJ0M2y1GTrCG1kmRCUewGiSFAg=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "tScWnKJqiWnNMKc0yePhm61nJY9NbG4wWELZJW2zlq6IcTAwbWkjUHeGRAQv6/EkgJmcNQr/Tl9Gyof9zPhjPw=="
       }
     }
   }
