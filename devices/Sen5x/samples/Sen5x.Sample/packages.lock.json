@@ -10,15 +10,15 @@
       },
       "nanoFramework.Hardware.Esp32": {
         "type": "Direct",
-        "requested": "[1.6.34, 1.6.34]",
-        "resolved": "1.6.34",
-        "contentHash": "foKyzG0ZjHyZzzfLh/To5/2G+3EWeKqKFbkdpF310w2EE3RMcH+Rf9JM+GW8HEdmTRzIOcBQQm4S37VBJwP54Q=="
+        "requested": "[1.6.42, 1.6.42]",
+        "resolved": "1.6.42",
+        "contentHash": "2mccJJYq+9sw9bhy0rhZZU6Bg+3cDdXQWE/O+B/jRR8xC2vTxO5fbqIr4Z9E6+e8bybXWoJA82OldPJYtdmjiA=="
       },
       "nanoFramework.Runtime.Events": {
         "type": "Direct",
-        "requested": "[1.11.32, 1.11.32]",
-        "resolved": "1.11.32",
-        "contentHash": "NyLUIwJDlpl5VKSd+ljmdDtO2WHHBvPvruo1ccaL+hd79z+6XMYze1AccOVXKGiZenLBCwDmFHwpgIQyHkM7GA=="
+        "requested": "[1.11.39, 1.11.39]",
+        "resolved": "1.11.39",
+        "contentHash": "qNcgsk1QU5lTj2MgMYyF4iTx85YjFcAfJP9sYYydUlEXL1JaO2MnKGI3oBG4p20dJ1Fqi1ClIgKXJfAp9z80tA=="
       },
       "nanoFramework.System.Device.I2c": {
         "type": "Direct",
@@ -28,21 +28,21 @@
       },
       "UnitsNet.nanoFramework.MassConcentration": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "qtZJVPmkM8hif9PE2SPFZFH+hGmArxjNgKFyZwZftzTkqn732Nl5l8VOJWhjcic1zhpkDrJn7isbmLi134MS1g=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "TZvb6hA+eoC5YwB/OQS3SGu6QP1CgIoSh/CE/jpa5MvlO8WekiOqGDOkTsfsbWSm2mD1mT/i0QQnAjnR8mTcYQ=="
       },
       "UnitsNet.nanoFramework.RelativeHumidity": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "qoB2acv7um+hoZorZTr9jQcnHRUnmO46wtZTW7xRIXHR2tEryrh1mbzqGms9igAr+7/lZ0v55QiZd+0BmapUZw=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "6+8UDTXrucg76Dg2EFkpHTaEngSMz/jA+5qrsGCilIZxFKjG3+9b6az3+oMcQvT1uDWmG2EDif8ShxE1aqANAA=="
       },
       "UnitsNet.nanoFramework.Temperature": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "SpA9Z7T1sNaR7YBCYp+L9/ei1bjDkqi8PyPfOWVBjkWInuPSOQaPG9Y7UttIpJ0M2y1GTrCG1kmRCUewGiSFAg=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "tScWnKJqiWnNMKc0yePhm61nJY9NbG4wWELZJW2zlq6IcTAwbWkjUHeGRAQv6/EkgJmcNQr/Tl9Gyof9zPhjPw=="
       }
     }
   }
