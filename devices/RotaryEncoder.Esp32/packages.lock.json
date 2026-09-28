@@ -10,15 +10,15 @@
       },
       "nanoFramework.Hardware.Esp32": {
         "type": "Direct",
-        "requested": "[1.6.34, 1.6.34]",
-        "resolved": "1.6.34",
-        "contentHash": "foKyzG0ZjHyZzzfLh/To5/2G+3EWeKqKFbkdpF310w2EE3RMcH+Rf9JM+GW8HEdmTRzIOcBQQm4S37VBJwP54Q=="
+        "requested": "[1.6.42, 1.6.42]",
+        "resolved": "1.6.42",
+        "contentHash": "2mccJJYq+9sw9bhy0rhZZU6Bg+3cDdXQWE/O+B/jRR8xC2vTxO5fbqIr4Z9E6+e8bybXWoJA82OldPJYtdmjiA=="
       },
       "nanoFramework.Runtime.Events": {
         "type": "Direct",
-        "requested": "[1.11.32, 1.11.32]",
-        "resolved": "1.11.32",
-        "contentHash": "NyLUIwJDlpl5VKSd+ljmdDtO2WHHBvPvruo1ccaL+hd79z+6XMYze1AccOVXKGiZenLBCwDmFHwpgIQyHkM7GA=="
+        "requested": "[1.11.39, 1.11.39]",
+        "resolved": "1.11.39",
+        "contentHash": "qNcgsk1QU5lTj2MgMYyF4iTx85YjFcAfJP9sYYydUlEXL1JaO2MnKGI3oBG4p20dJ1Fqi1ClIgKXJfAp9z80tA=="
       },
       "nanoFramework.Runtime.Native": {
         "type": "Direct",
@@ -40,9 +40,9 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.7.115, 3.7.115]",
-        "resolved": "3.7.115",
-        "contentHash": "EpXamaAdRfG/BMxGgvZlTM0npRnkmXUjAj8OdNKd17t4oN+2nvjdv/KnFmzOOMDqvlwB49UCwtOHJrAQTfUBtQ=="
+        "requested": "[3.10.94, 3.10.94]",
+        "resolved": "3.10.94",
+        "contentHash": "sn6gFIx6bwFj3Me0XGmek3gLZi/MZC8C4tRLwslXGeBcXcVxvFpZyDrQA93G8TiYgxTS7J7triKB7hj5wXzSxA=="
       },
       "StyleCop.MSBuild": {
         "type": "Direct",
