@@ -10,15 +10,15 @@
       },
       "nanoFramework.Graphics.Core": {
         "type": "Direct",
-        "requested": "[1.2.45, 1.2.45]",
-        "resolved": "1.2.45",
-        "contentHash": "Lq18/cYOJnpd8dX/V6cAi9dNJ6d9vjOaUTdAJTS2iwMcUVph0SM3fTLux4wkpPXY5iheQd6VxHwqLlMRTM7mFw=="
+        "requested": "[1.2.55, 1.2.55]",
+        "resolved": "1.2.55",
+        "contentHash": "0aK2q1Rl78YLXk8gAMCUD/hYnTaug4gmZ8YWQYd1Wp0LfTBF2GYaLl6AiVmsznvLTuHlGqQXPHzV1i9qnOstDw=="
       },
       "nanoFramework.Runtime.Events": {
         "type": "Direct",
-        "requested": "[1.11.32, 1.11.32]",
-        "resolved": "1.11.32",
-        "contentHash": "NyLUIwJDlpl5VKSd+ljmdDtO2WHHBvPvruo1ccaL+hd79z+6XMYze1AccOVXKGiZenLBCwDmFHwpgIQyHkM7GA=="
+        "requested": "[1.11.39, 1.11.39]",
+        "resolved": "1.11.39",
+        "contentHash": "qNcgsk1QU5lTj2MgMYyF4iTx85YjFcAfJP9sYYydUlEXL1JaO2MnKGI3oBG4p20dJ1Fqi1ClIgKXJfAp9z80tA=="
       },
       "nanoFramework.System.Buffers.Binary.BinaryPrimitives": {
         "type": "Direct",
@@ -28,9 +28,9 @@
       },
       "nanoFramework.System.Device.Gpio": {
         "type": "Direct",
-        "requested": "[1.1.57, 1.1.57]",
-        "resolved": "1.1.57",
-        "contentHash": "Es7jHRrT/+0Ty9uJNzJUcTn+aCpjkxXnmsaM+g9HXvLZ8k4SDCCqmO9pT317nX+9ehmgGo2JKrtmkekgbOp+Pw=="
+        "requested": "[1.1.64, 1.1.64]",
+        "resolved": "1.1.64",
+        "contentHash": "V6pBMEbvBITr5bbX5LHrRQ7g7583FfzNuv7LY62udDecfpxjK3GFO9cEf5DHsQSqkV36VziCCkpP3ecYqLXK1A=="
       },
       "nanoFramework.System.Device.I2c": {
         "type": "Direct",
@@ -52,9 +52,9 @@
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.7.115, 3.7.115]",
-        "resolved": "3.7.115",
-        "contentHash": "EpXamaAdRfG/BMxGgvZlTM0npRnkmXUjAj8OdNKd17t4oN+2nvjdv/KnFmzOOMDqvlwB49UCwtOHJrAQTfUBtQ=="
+        "requested": "[3.10.94, 3.10.94]",
+        "resolved": "3.10.94",
+        "contentHash": "sn6gFIx6bwFj3Me0XGmek3gLZi/MZC8C4tRLwslXGeBcXcVxvFpZyDrQA93G8TiYgxTS7J7triKB7hj5wXzSxA=="
       },
       "StyleCop.MSBuild": {
         "type": "Direct",
@@ -64,9 +64,9 @@
       },
       "UnitsNet.nanoFramework.Length": {
         "type": "Direct",
-        "requested": "[5.75.0, 5.75.0]",
-        "resolved": "5.75.0",
-        "contentHash": "hHDijQvM1EyFQ6lfFXiS2g74T55D4/Qzr2oZ4RwVcz5dEs/AnVbMzH2a4509lyj/6eEMiTIwnSdw0s/mlqDeuA=="
+        "requested": "[5.75.1, 5.75.1]",
+        "resolved": "5.75.1",
+        "contentHash": "l4ZROhxj0j+1IG1xzqWLbsaq0TnBJtdZAVGaoF2WInmhWdPI5n3s7z06EWYCU4jGieTQXYazzoOEMgU60MKyiA=="
       }
     }
   }
